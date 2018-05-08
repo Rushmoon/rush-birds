@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>愤怒的小鸟</title>
+    <style>
+        canvas{
+            border: 1px solid rebeccapurple;
+        }
+    </style>
+</head>
+<body>
+<script src="js/birds.js"></script>
+<script src="js/background.js"></script>
+<script src="js/land.js"></script>
+<script src="js/pipe.js"></script>
+<script src="js/litlebirds.js"></script>
+<canvas width="500px" height="500px">为什么打扰我，你要为此付出代价</canvas>
+<script>
+    var ocanVas =document.querySelector("canvas");
+    var ctx = ocanVas.getContext("2d");
+    var imUrl={'sky':'images/sky.png','land':'images/land.png','pipeDown':'images/pipeDown.png',
+         'pipeUp':'images/pipeUp.png','bird':'images/bird.png'};
+    var role=[];
+    LodePic(imUrl,function (imoge) {
+        ocanVas.width=imoge.sky.width;
+        ocanVas.height=imoge.sky.height;
+//        var p=new PipeUp(ctx,imoge.pipeUp,imoge.pipeDown,imoge.land.height);
+      //  console.log(p.imgD);
+//        p.init();
+//        p.draw();
+        for (var x=0;x<2;x++){
+            role.push(new Sky(ctx,imoge.sky));
+        }
+        for (var i=0;i<6;i++){
+            role.push(new PipeUp(ctx,imoge.pipeUp,imoge.pipeDown,imoge.land.height));
+        }
+        for (var j=0;j<4;j++){
+            role.push(new Land(ctx,imoge.land));
+        }
+        var birds=new Bird(ctx,imoge.bird,10,10);
+        role.push(birds);
+        var time = setInterval(function () {
+                var birdPox = birds.x+birds.width/2;
+                var birdPoy = birds.y+birds.height/2;
+                console.log("y:"+imoge.land.y);
+                console.log(ctx.canvas.height-imoge.land.height);
+                console.log(PipeUp.len);
+
+            if (birdPoy<0 || birdPoy>ctx.canvas.height-imoge.land.height || ctx.isPointInPath(birdPox,birdPoy)){
+               clearInterval(time);
+               ctx.beginPath();
+               ctx.fillStyle="rgba(0,0,0,0.5)";
+               ctx.fillRect(0,0,ocanVas.width,ocanVas.height);
+               ctx.beginPath();
+               ctx.fillStyle='white';
+               ctx.textAlign='center';
+               ctx.textBaseline='middle';
+               ctx.font='100px "微软雅黑"';
+               ctx.fillText('GAME OVER',ocanVas.width/2,ocanVas.height/2);
+            }
+           else {
+                ctx.beginPath();
+                role.forEach(function (role, i) {
+                    role.draw();
+                    role.update();
+                })
+            }
+        },50)
+
+
+    })
+
+
+</script>
+</body>
+</html>
